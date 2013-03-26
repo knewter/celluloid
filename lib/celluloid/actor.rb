@@ -198,7 +198,7 @@ module Celluloid
             # No message indicates a timeout
             @timers.fire
             @receivers.fire_timers
-            terminate if @soft_terminated
+            terminate if should_soft_terminate?
           end
         end
       rescue MailboxShutdown
@@ -209,6 +209,11 @@ module Celluloid
     rescue Exception => ex
       handle_crash(ex)
       raise unless ex.is_a? StandardError
+    end
+
+    def should_soft_terminate?
+      actor = Thread.current[:celluloid_actor]
+      @soft_terminated && actor.tasks.empty?
     end
 
     # Terminate this actor
