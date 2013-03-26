@@ -285,6 +285,11 @@ module Celluloid
     Thread.current[:celluloid_actor].terminate
   end
 
+  # Soft Terminate this actor
+  def soft_terminate
+    Thread.current[:celluloid_actor].soft_terminate
+  end
+
   # Send a signal with the given name to all waiting methods
   def signal(name, value = nil)
     Thread.current[:celluloid_actor].signal name, value

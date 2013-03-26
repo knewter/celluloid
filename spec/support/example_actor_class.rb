@@ -72,6 +72,12 @@ module ExampleActorClass
         async.zomg_private
       end
 
+      def handle_spinning_job
+        while $foo != true
+          sleep 0.1
+        end
+      end
+
       def zomg_private
         @private_called = true
       end

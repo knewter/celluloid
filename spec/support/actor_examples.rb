@@ -294,6 +294,31 @@ shared_context "a Celluloid Actor" do |included_module|
     end
   end
 
+  context :soft_termination do
+    it "terminates if there are no messages in the mailbox" do
+      actor = actor_class.new "Arnold Schwarzenegger"
+      actor.should be_alive
+      actor.soft_terminate
+      Celluloid::Actor.join(actor)
+      actor.should_not be_alive
+    end
+
+    it "waits until mailbox is empty to terminate" do
+      actor = actor_class.new "Arnold Schwarzenegger"
+      actor.should be_alive
+      actor.async.handle_spinning_job # waits for $foo = true
+      actor.soft_terminate
+      Celluloid::Actor.join(actor)
+      actor.should be_alive
+      $foo = true
+      sleep 1
+      actor.should_not be_alive
+    end
+
+    it "refuses new messages" do
+    end
+  end
+
   context :current_actor do
     it "knows the current actor" do
       actor = actor_class.new "Roger Daltrey"

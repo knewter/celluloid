@@ -176,6 +176,7 @@ module Celluloid
       @running   = true
       @exclusive = false
       @name      = nil
+      @soft_terminated = false
 
       @thread = ThreadHandle.new do
         Thread.current[:celluloid_actor]   = self
@@ -197,6 +198,7 @@ module Celluloid
             # No message indicates a timeout
             @timers.fire
             @receivers.fire_timers
+            terminate if @soft_terminated
           end
         end
       rescue MailboxShutdown
@@ -212,6 +214,11 @@ module Celluloid
     # Terminate this actor
     def terminate
       @running = false
+    end
+
+    # Soft terminate this actor (terminate when all messages have been handled)
+    def soft_terminate
+      @soft_terminated = true
     end
 
     # Is this actor running in exclusive mode?
