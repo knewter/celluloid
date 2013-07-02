@@ -10,7 +10,7 @@ module Celluloid
       end
     end
 
-    class TaskState < Struct.new(:task_class, :type, :meta, :status, :backtrace)
+    class TaskState < Struct.new(:task_class, :type, :meta, :suspend_meta, :status, :backtrace)
     end
 
     class ActorState
@@ -87,7 +87,7 @@ module Celluloid
         state.status = :idle
       else
         state.status = :running
-        state.tasks = tasks.to_a.map { |t| TaskState.new(t.class, t.type, t.meta, t.status, t.backtrace) }
+        state.tasks = tasks.to_a.map { |t| TaskState.new(t.class, t.type, t.meta, t.suspend_meta, t.status, t.backtrace) }
       end
 
       state.backtrace = actor.thread.backtrace if actor.thread
