@@ -67,11 +67,11 @@ module Celluloid
       Logger.exception_handler(&block)
     end
 
-    def suspend(status, waiter)
+    def suspend(status, waiter, meta={})
       task = Thread.current[:celluloid_task]
       if task && !Celluloid.exclusive?
         waiter.before_suspend(task) if waiter.respond_to?(:before_suspend)
-        Task.suspend(status)
+        Task.suspend(status, meta)
       else
         waiter.wait
       end

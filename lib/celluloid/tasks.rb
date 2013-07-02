@@ -20,11 +20,11 @@ module Celluloid
     end
 
     # Suspend the running task, deferring to the scheduler
-    def self.suspend(status)
-      Task.current.suspend(status)
+    def self.suspend(status, meta={})
+      Task.current.suspend(status, meta)
     end
 
-    attr_reader :type, :meta, :status
+    attr_reader :type, :meta, :status, :suspend_meta
     attr_accessor :chain_id
 
     # Create a new task
@@ -65,8 +65,9 @@ module Celluloid
     end
 
     # Suspend the current task, changing the status to the given argument
-    def suspend(status)
+    def suspend(status, meta={})
       raise "Cannot suspend while in exclusive mode" if exclusive?
+      @suspend_meta = meta
 
       @status = status
 
@@ -84,6 +85,7 @@ module Celluloid
 
     # Resume a suspended task, giving it a value to return if needed
     def resume(value = nil)
+      @suspend_meta = nil
       deliver(value)
       nil
     end
